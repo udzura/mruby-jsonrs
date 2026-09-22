@@ -1,0 +1,20 @@
+[package]
+name = "mruby-jsonrs"
+version = "0.1.0"
+edition = "2021"
+authors = ["Uchio Kondo"]
+description = "Rust and Serde implementation for mruby-jsonrs"
+license = "MIT"
+
+[lib]
+crate-type = ["staticlib"]
+
+[dependencies]
+serde = "1.0"
+serde_json = "1.0"
+
+[profile.release]
+panic = "abort"
+lto = true
+opt-level = "z"
+codegen-units = 1
