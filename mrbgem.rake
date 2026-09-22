@@ -4,6 +4,11 @@ MRuby::Gem::Specification.new("mruby-jsonrs") do |spec|
   spec.version = "0.1.0"
   spec.summary = "JSON support for mruby using Rust and Serde"
 
+  spec.add_conflict "mruby-json"
+  spec.add_conflict "mruby-iijson"
+  spec.add_conflict "mruby-yyjson"
+  spec.add_conflict "picoruby-json"
+
   rust_dir = File.join(dir, "rust")
   rust_target = ENV["MRUBY_JSONRS_RUST_TARGET"]
   cc_command = Array(spec.build.cc.command).join(" ")
