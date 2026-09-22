@@ -18,6 +18,9 @@ JSON.dump([1, 2, 3])
 
 The initial implementation supports `nil`, booleans, integers, floats,
 strings, symbols, arrays, and hashes. Hash keys must be strings or symbols.
+Other objects use their `to_json` result verbatim when the method is defined;
+otherwise, their `to_s` result is encoded as a JSON string. `to_json` receives
+a `JSON::State` object with `generate` and `JSON::State.from_state` support.
 
 ## Add to an mruby build
 

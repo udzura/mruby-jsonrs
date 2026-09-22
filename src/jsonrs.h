@@ -25,6 +25,7 @@ mruby_jsonrs_value *mruby_jsonrs_bool_new(bool value);
 mruby_jsonrs_value *mruby_jsonrs_i64_new(int64_t value);
 mruby_jsonrs_value *mruby_jsonrs_f64_new(double value, char **error);
 mruby_jsonrs_value *mruby_jsonrs_string_new(const uint8_t *data, size_t len, char **error);
+mruby_jsonrs_value *mruby_jsonrs_raw_new(const uint8_t *data, size_t len, char **error);
 mruby_jsonrs_value *mruby_jsonrs_array_new(void);
 bool mruby_jsonrs_array_push(mruby_jsonrs_value *array, mruby_jsonrs_value *child);
 mruby_jsonrs_value *mruby_jsonrs_object_new(void);
