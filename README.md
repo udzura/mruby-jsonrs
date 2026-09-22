@@ -67,3 +67,63 @@ can be used as follows:
 cd ../mruby
 MRUBY_CONFIG=/path/to/mruby-jsonrs/build_config.rb rake test
 ```
+
+## Native benchmark
+
+The benchmark builds two native mruby executables with the same configuration,
+changing only the JSON gem, and measures generation and parsing of the same
+JSON document. The comparison uses `mattn/mruby-json` at commit
+`f99d9428025469f2400f93c53b185f65f963e507`.
+
+```console
+MRUBY_ROOT=/path/to/mruby ./benchmark/run.sh
+```
+
+The default run uses 100 warmup iterations and 1,000 measured iterations.
+They and the temporary build directory can be overridden:
+
+```console
+MRUBY_ROOT=/path/to/mruby \
+  WARMUP=200 ITERATIONS=5000 \
+  BENCH_BUILD_DIR=/tmp/mruby-json-benchmark \
+  ./benchmark/run.sh
+```
+
+### Wasmtime benchmark
+
+The WASI benchmark builds both implementations for `wasm32-wasip1` and runs
+them with Wasmtime. A small benchmark-only C shim measures the JSON loops with
+`clock_gettime(CLOCK_MONOTONIC)` inside the guest, excluding Wasmtime startup
+and compilation from the reported time.
+
+```console
+MRUBY_ROOT=/path/to/mruby \
+  WASI_SDK_PATH=/path/to/wasi-sdk \
+  ./benchmark/run_wasi.sh
+```
+
+`WARMUP`, `ITERATIONS`, `JOBS`, and `BENCH_BUILD_DIR` can be overridden in the
+same way as for the native benchmark. WASI SDK 26 or later and the Rust
+`wasm32-wasip1` target are required.
+
+Set `FIXTURE=ja` to use a roughly 20 KB JSON payload with a Japanese article
+body. The default `FIXTURE=ascii` uses an ASCII body of a similar byte length.
+
+### PicoRuby comparison
+
+`picoruby-json` can be measured separately with the same Ruby fixture and the
+same in-guest clock. This uses a non-mutating PicoRuby build configuration, so
+it does not rewrite files in the supplied checkout.
+
+PicoRuby's production Emscripten build delegates its Wasm `Regexp` fast path
+to JavaScript. Wasmtime provides no JavaScript host API, so this benchmark
+selects `picoruby-json`'s portable, non-Regexp parser path.
+
+```console
+PICORUBY_ROOT=/path/to/picoruby \
+  WASI_SDK_PATH=/path/to/wasi-sdk \
+  ./benchmark/run_picoruby_wasi.sh
+```
+
+Use the same `FIXTURE`, `WARMUP`, `ITERATIONS`, `JOBS`, and `BENCH_BUILD_DIR`
+environment variables as the other benchmark commands.

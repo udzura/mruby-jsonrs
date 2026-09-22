@@ -1,0 +1,12 @@
+---
+mruby:
+  version: 4.0.0
+  release_no: 40000
+  git_commit: db375558cd44d039f13320a6685ad0e0b0f046a3
+builds:
+  benchmark-mruby-json-wasi:
+    https://github.com/mattn/mruby-json.git:
+      url: https://github.com/mattn/mruby-json.git
+      branch: master
+      commit: f99d9428025469f2400f93c53b185f65f963e507
+      version: 0.0.0
