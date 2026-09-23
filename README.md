@@ -33,6 +33,10 @@ When mruby's C compiler is `emcc`, Cargo uses
 `wasm32-unknown-emscripten`, producing a Rust static library that is added to
 the final linker command.
 
+> [!IMPORTANT]
+> Building for the `wasm32-unknown-emscripten` target requires `-Z build-std=std,panic_abort` for proper linking with the Emscripten standard library.
+> Because `-Z build-std` is unstable, you need to use the nightly Rust toolchain.
+
 Install the Emscripten Rust target before a Wasm build:
 
 ```console
