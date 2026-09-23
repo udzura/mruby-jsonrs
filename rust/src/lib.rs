@@ -1,6 +1,6 @@
 use serde_json::{Number, Value as SerdeValue};
 use std::collections::BTreeMap;
-use std::ffi::{c_char, CString};
+use std::ffi::{CString, c_char};
 use std::ptr;
 use std::slice;
 
@@ -106,7 +106,7 @@ unsafe fn write_error(error: *mut *mut c_char, message: impl AsRef<str>) {
     unsafe { *error = message.into_raw() };
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `error` must be null or a pointer returned through this library's error output.
 pub unsafe extern "C" fn mruby_jsonrs_error_free(error: *mut c_char) {
@@ -115,7 +115,7 @@ pub unsafe extern "C" fn mruby_jsonrs_error_free(error: *mut c_char) {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `value` must be null or an owned pointer returned by this library.
 pub unsafe extern "C" fn mruby_jsonrs_value_free(value: *mut JsonValue) {
@@ -124,22 +124,22 @@ pub unsafe extern "C" fn mruby_jsonrs_value_free(value: *mut JsonValue) {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn mruby_jsonrs_null_new() -> *mut JsonValue {
     Box::into_raw(Box::new(JsonValue::Null))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn mruby_jsonrs_bool_new(value: bool) -> *mut JsonValue {
     Box::into_raw(Box::new(JsonValue::Bool(value)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn mruby_jsonrs_i64_new(value: i64) -> *mut JsonValue {
     Box::into_raw(Box::new(JsonValue::Number(Number::from(value))))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `error` must be null or writable.
 pub unsafe extern "C" fn mruby_jsonrs_f64_new(
@@ -155,7 +155,7 @@ pub unsafe extern "C" fn mruby_jsonrs_f64_new(
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `data` must reference `len` readable bytes, and `error` must be null or writable.
 pub unsafe extern "C" fn mruby_jsonrs_string_new(
@@ -179,7 +179,7 @@ pub unsafe extern "C" fn mruby_jsonrs_string_new(
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `data` must reference `len` readable bytes, and `error` must be null or writable.
 pub unsafe extern "C" fn mruby_jsonrs_raw_new(
@@ -196,12 +196,12 @@ pub unsafe extern "C" fn mruby_jsonrs_raw_new(
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn mruby_jsonrs_array_new() -> *mut JsonValue {
     Box::into_raw(Box::new(JsonValue::Array(Vec::new())))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// Both pointers must be owned values returned by this library. On success,
 /// ownership of `child` is transferred to `array`.
@@ -219,12 +219,12 @@ pub unsafe extern "C" fn mruby_jsonrs_array_push(
     true
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 pub extern "C" fn mruby_jsonrs_object_new() -> *mut JsonValue {
     Box::into_raw(Box::new(JsonValue::Object(BTreeMap::new())))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `object` and `child` must be owned values returned by this library, `key`
 /// must reference `key_len` readable bytes, and `error` must be null or writable.
@@ -257,7 +257,7 @@ pub unsafe extern "C" fn mruby_jsonrs_object_insert(
     true
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `data` must reference `len` readable bytes, and `error` must be null or writable.
 pub unsafe extern "C" fn mruby_jsonrs_parse(
@@ -281,7 +281,7 @@ pub unsafe extern "C" fn mruby_jsonrs_parse(
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `value` must be a live value returned by this library. `output` and
 /// `output_len` must be writable, and `error` must be null or writable.
@@ -314,7 +314,7 @@ pub unsafe extern "C" fn mruby_jsonrs_generate(
     true
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `data` and `len` must be the exact pair returned by `mruby_jsonrs_generate`.
 pub unsafe extern "C" fn mruby_jsonrs_bytes_free(data: *mut u8, len: usize) {
@@ -324,7 +324,7 @@ pub unsafe extern "C" fn mruby_jsonrs_bytes_free(data: *mut u8, len: usize) {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `value` must be a live value returned by this library.
 pub unsafe extern "C" fn mruby_jsonrs_value_type(value: *const JsonValue) -> i32 {
@@ -341,14 +341,14 @@ pub unsafe extern "C" fn mruby_jsonrs_value_type(value: *const JsonValue) -> i32
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `value` must be a live boolean value returned by this library.
 pub unsafe extern "C" fn mruby_jsonrs_bool_get(value: *const JsonValue) -> bool {
     matches!(unsafe { value_ref(value) }, Some(JsonValue::Bool(true)))
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `value` must be a live signed integer value returned by this library.
 pub unsafe extern "C" fn mruby_jsonrs_i64_get(value: *const JsonValue) -> i64 {
@@ -358,7 +358,7 @@ pub unsafe extern "C" fn mruby_jsonrs_i64_get(value: *const JsonValue) -> i64 {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `value` must be a live unsigned integer value returned by this library.
 pub unsafe extern "C" fn mruby_jsonrs_u64_get(value: *const JsonValue) -> u64 {
@@ -368,7 +368,7 @@ pub unsafe extern "C" fn mruby_jsonrs_u64_get(value: *const JsonValue) -> u64 {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `value` must be a live floating-point value returned by this library.
 pub unsafe extern "C" fn mruby_jsonrs_f64_get(value: *const JsonValue) -> f64 {
@@ -378,7 +378,7 @@ pub unsafe extern "C" fn mruby_jsonrs_f64_get(value: *const JsonValue) -> f64 {
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `value` must be a live string value returned by this library, and `len`
 /// must be null or writable.
@@ -395,7 +395,7 @@ pub unsafe extern "C" fn mruby_jsonrs_string_data(
     value.as_ptr()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `value` must be a live array value returned by this library.
 pub unsafe extern "C" fn mruby_jsonrs_array_len(value: *const JsonValue) -> usize {
@@ -405,7 +405,7 @@ pub unsafe extern "C" fn mruby_jsonrs_array_len(value: *const JsonValue) -> usiz
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `value` must be a live array value returned by this library. The returned
 /// pointer is borrowed from `value` and must not outlive it.
@@ -419,7 +419,7 @@ pub unsafe extern "C" fn mruby_jsonrs_array_get(
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `value` must be a live object value returned by this library.
 pub unsafe extern "C" fn mruby_jsonrs_object_len(value: *const JsonValue) -> usize {
@@ -429,7 +429,7 @@ pub unsafe extern "C" fn mruby_jsonrs_object_len(value: *const JsonValue) -> usi
     }
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `value` must be a live object value returned by this library, `index` must
 /// be in bounds, and `len` must be null or writable.
@@ -450,7 +450,7 @@ pub unsafe extern "C" fn mruby_jsonrs_object_key(
     key.as_ptr()
 }
 
-#[no_mangle]
+#[unsafe(no_mangle)]
 /// # Safety
 /// `value` must be a live object value returned by this library. The returned
 /// pointer is borrowed from `value` and must not outlive it.

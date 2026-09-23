@@ -21,6 +21,15 @@ MRuby::Gem::Specification.new("mruby-jsonrs") do |spec|
   file rust_lib => rust_sources do
     command = ["cargo", "build", "--manifest-path", File.join(rust_dir, "Cargo.toml"), "--release"]
     command += ["--target", rust_target] if rust_target
+    command = [
+      "cargo", "+nightly",
+      "build",
+      "-Z", "build-std=std,panic_abort",
+      "--manifest-path", File.join(rust_dir, "Cargo.toml"),
+      "--target", rust_target,
+      "--release"
+    ] if rust_target == "wasm32-unknown-emscripten"
+
     sh(*command)
   end
 
